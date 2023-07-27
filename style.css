@@ -90,6 +90,7 @@ html {
   background-color: var(--color-screen-background);
   color: var(--color-top-section-text);
   transition: background-color var(--timing-animation);
+  overflow-x: hidden;
 }
 .calc__result span {
   font-size: 1.5rem;
