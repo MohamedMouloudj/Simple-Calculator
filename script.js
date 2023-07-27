@@ -16,6 +16,16 @@ let operation = ""
 const resultSpace = document.querySelector(".calc__result");
 const keyElements = document.querySelectorAll(".calc__key");
 
+const showOperation=(oldValue,op)=>{
+  const verbose=`<span class="show__operation">${oldValue}${op}</span>`;
+  resultSpace.insertAdjacentHTML("afterbegin",verbose);
+}
+
+const showFullOperation=(number,oldNumber)=>{
+  const verbose=`<span class="show__operation">${oldNumber} ${operation} ${number}</span>`;
+  resultSpace.insertAdjacentHTML("afterbegin",verbose);
+}
+
 const updateScreen = (value) => {
   resultSpace.textContent = !value ? "0" : value;
 }
@@ -28,9 +38,10 @@ const numberHandler = (keyValue) => {
       currentNumber = "0";
     }
   }
-  if (keyValue === "0" && (!currentNumber || currentNumber === "0")) return;
+  if (keyValue === "0" && ((!currentNumber || currentNumber === "0") && !operation)) return;
   currentNumber += keyValue;
   updateScreen(currentNumber);
+  showOperation(storedNumber,operation);
 }
 
 const resetHandler = () => {
@@ -59,25 +70,48 @@ const executeOperation = () => {
         break;
       default:
         storedNumber = parseFloat(storedNumber) / parseFloat(currentNumber);
+        if(storedNumber===Infinity){
+          updateScreen("Cannot divide by zero");
+          storedNumber="";
+          return
+        }
         break;
     }
     currentNumber = "";
     updateScreen(storedNumber)
+    showOperation(storedNumber,operation);
   }
 }
 
 const operationHandler = (operationValue) => {
+  const existeSpan=document.querySelector(".show__operation");
   if (!storedNumber && !currentNumber) return;
-  if (currentNumber && !storedNumber) {
+  if (currentNumber && (!storedNumber || storedNumber === 0)) {
     storedNumber = currentNumber;
     currentNumber = "";
     operation = operationValue;
+    if(existeSpan){
+      existeSpan.remove();
+    }
+    showOperation(storedNumber,operation);
+    return;
   } else if (storedNumber) {
     if (currentNumber) {
+      if(existeSpan){
+        existeSpan.remove();
+      }
+      showOperation(storedNumber,operation);
       executeOperation()
     }
     operation = operationValue;
+    
+    if(document.querySelector(".show__operation")){
+      document.querySelector(".show__operation").remove()
+    }
+    showOperation(storedNumber,operation);
+    return;
   }
+  
 }
 
 const keyHandler = (key) => {
@@ -95,7 +129,14 @@ const keyHandler = (key) => {
             deleteHandler()
             break;
           case "Enter":
+            const tempCurrentNumber=currentNumber;
+            const tempStoredNumber=storedNumber;
             executeOperation();
+            if(document.querySelector(".show__operation")){
+              document.querySelector(".show__operation").remove()
+            }
+            showFullOperation(tempCurrentNumber,tempStoredNumber);
+            operation="";
             break;
           default:
             operationHandler(key.dataset.value)
