@@ -90,7 +90,13 @@ html {
   background-color: var(--color-screen-background);
   color: var(--color-top-section-text);
   transition: background-color var(--timing-animation);
-  overflow-x: hidden;
+  overflow-x: scroll;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-key-blue-shadow);
+}
+::-webkit-scrollbar {
+  width: 3px;
 }
 .calc__result span {
   font-size: 1.5rem;
