@@ -1,4 +1,5 @@
 # Simple-Calculator
+https://mohamedmouloudj.github.io/Simple-Calculator/
 ### Technology I used:
 - HTML
 - CSS
